@@ -1,0 +1,17 @@
+LoongArch GNU cross-toolchain version rc1.1 (20220914)
+
+gcc-8.3.0
+repo:       complier/gcc-8.3.0
+commit:     4d471b591297d79773ac3fc409c07ec47c538e85
+
+binutils-2.31
+repo:       compiler/binutils
+commit:     dc545ca87e8698245ac88e646ab1649b14574898
+
+glibc-2.28 
+repo:       compiler/glibc-2.28 
+commit:     307697cb07839117f613b9a661c02415f5c65299
+
+gdb-8.1.50
+repo:       compiler/gdb
+commit:     2b7047a436012f8cdf1f582af7cf24ca67a2b9bb

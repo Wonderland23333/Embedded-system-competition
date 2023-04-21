@@ -1,0 +1,7 @@
+/* Generated automatically. */
+static const char configuration_arguments[] = "/dev/shm/build_loongarch64_gcc8-host-x86_64-rc1.1_2022-09-14/src/gcc/configure --build=x86_64-unknown-linux-gnu --host=x86_64-unknown-linux-gnu --target=loongarch64-linux-gnu --program-prefix=loongarch64-linux-gnu- --prefix=/dev/shm/build_loongarch64_gcc8-host-x86_64-rc1.1_2022-09-14/cross --libdir=/dev/shm/build_loongarch64_gcc8-host-x86_64-rc1.1_2022-09-14/cross/lib --with-gxx-include-dir=/dev/shm/build_loongarch64_gcc8-host-x86_64-rc1.1_2022-09-14/cross/sysroot/usr/include/c++ --with-sysroot=/dev/shm/build_loongarch64_gcc8-host-x86_64-rc1.1_2022-09-14/cross/sysroot --with-native-system-header-dir=/usr/include --with-slibdir=/dev/shm/build_loongarch64_gcc8-host-x86_64-rc1.1_2022-09-14/cross/sysroot/usr/lib --with-pkgversion='LoongArch GNU toolchain rc1.1 (20220914)' --with-arch=loongarch64 --with-abi=lp64d --with-multilib-list=lp64d,lp64s --enable-checking=release --disable-linker-build-id --enable-languages=c,c++,fortran --disable-libgcc --disable-libstdc++ --disable-libgfortran --disable-gcov --enable-libcc1 --enable-threads=posix --enable-tls --enable-initfini-array --enable-__cxa_atexit --disable-libatomic --disable-libmudflap --disable-libvtv --disable-libgomp --disable-libmpx --disable-nls --disable-bootstrap";
+static const char thread_model[] = "posix";
+
+static const struct {
+  const char *name, *value;
+} configure_default_options[] = { { "abi", "lp64d" }, { "arch", "loongarch64" }, { "tune", "la464" }, { "fpu", "64" } };
