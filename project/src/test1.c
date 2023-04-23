@@ -6,6 +6,8 @@
 #include <errno.h>
 #include <string.h>
 #define BUF_SIZE 1024
+#define CRTSCTS  0x80000000
+
 // TODO: 添加温湿度传感器初始化代码
 // cellect inf
 int cl(){
