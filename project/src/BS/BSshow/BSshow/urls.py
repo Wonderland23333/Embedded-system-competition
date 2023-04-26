@@ -16,8 +16,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from shower.views import data_list
+from django.shortcuts import redirect
 
 urlpatterns = [
+    path('', lambda request: redirect('admin:index')),
     path('admin/', admin.site.urls),
     path('data_list/', data_list, name='data_list'),
 ]
