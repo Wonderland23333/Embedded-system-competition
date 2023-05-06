@@ -6,8 +6,8 @@
 <body>
     <h1>Data List</h1>
     <ul>
-        {% for data_item in data_items %}
-        <li>{{ data_item.name }}: {{ data_item.value }}</li>
+        {% for sensor_data in sensor_data_list %}
+        <li>{{ sensor_data.name }}: {{ sensor_data.value }}</li>
         {% endfor %}
     </ul>
 </body>
