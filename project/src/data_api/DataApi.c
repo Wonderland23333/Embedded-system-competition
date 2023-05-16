@@ -110,14 +110,14 @@ for (int i = 0; i < NUM_AI; i++) {
 
 // 更新计算模拟量值
 for (int i = 0; i < NUM_CN; i++) {
-    char *formula = cn_array[i].formula;
+    char *formula = cn_array[i].formula;  // 计算公式
     for (int j = 0; j < strlen(formula); j++) {
         if (formula[j] == 'A' && formula[j+1] == 'I') {
-            int ai_index = formula[j+2] - '0' - 1;
-            char ai_str[10];
-            sprintf(ai_str, "%.2f", ai_array[ai_index].value);
-            memcpy(formula+j, ai_str, strlen(ai_str));
-            j += strlen(ai_str) - 1;
+            int ai_index = formula[j+2] - '0' - 1;  // 获取模拟量索引
+            char ai_str[10];  // 模拟量值字符串
+            sprintf(ai_str, "%.2f", ai_array[ai_index].value);  // 将模拟量值转换为字符串
+            memcpy(formula+j, ai_str, strlen(ai_str));  // 将模拟量值替换到计算公式中
+            j += strlen(ai_str) - 1;  // 跳过已替换的模拟量值
         }
     }
     cn_array[i].value = atof(formula);
@@ -136,30 +136,30 @@ int main() {
 
     // 初始化历史记录数组
     for (int i = 0; i < MAX_HIST_RECORDS; i++) {
-        hist_records[i].year = 0;
-        hist_records[i].month = 0;
-        hist_records[i].day = 0;
-        hist_records[i].value = 0;
+        hist_records[i].year = 0;    //年
+        hist_records[i].month = 0;   //月
+        hist_records[i].day = 0;     //日
+        hist_records[i].value = 0;   //值
     }
 
     // 安装定时器
     struct itimerval timer_val;
-    timer_val.it_value.tv_sec = 1;
-    timer_val.it_value.tv_usec = 0;
-    timer_val.it_interval.tv_sec = 1;
-    timer_val.it_interval.tv_usec = 0;
-    signal(SIGALRM, timer_callback);
-    setitimer(ITIMER_REAL, &timer_val, NULL);
+    timer_val.it_value.tv_sec = 1;   // 第一次触发定时器的时间，秒
+    timer_val.it_value.tv_usec = 0;    // 第一次触发定时器的时间，微秒
+    timer_val.it_interval.tv_sec = 1;   // 定时器周期，秒
+    timer_val.it_interval.tv_usec = 0;  // 定时器周期，微秒
+    signal(SIGALRM, timer_callback);    // 定时器回调函数
+    setitimer(ITIMER_REAL, &timer_val, NULL);   // 安装定时器
 
     // 循环输出模拟量值和计算模拟量值
     while (1) {
         printf("AI: ");
         for (int i = 0; i < NUM_AI; i++) {
-            printf("%.2f(%d) ", ai_array[i].value, ai_array[i].status);
+            printf("%.2f(%d) ", ai_array[i].value, ai_array[i].status); // 输出模拟量值和状态
         }
         printf("CN: ");
         for (int i = 0; i < NUM_CN; i++) {
-            printf("%.2f ", cn_array[i].value);
+            printf("%.2f ", cn_array[i].value); // 输出计算模拟量值
         }
         printf("\n");
 
@@ -167,21 +167,21 @@ int main() {
         sleep(1);
         // 更新模拟量输入数据
         for (int i = 0; i < NUM_AI; i++) {
-            double new_value = ai_array[i].raw_value + ((double)rand() / RAND_MAX - 0.5) * 2;
+            double new_value = ai_array[i].raw_value + ((double)rand() / RAND_MAX - 0.5) * 2;   // 模拟量输入数据随机波动
             if (new_value < 0) {
                 new_value = 0;
-                ai_array[i].status = 2;
+                ai_array[i].status = 2; // 越下限
             } else if (new_value > 10) {
                 new_value = 10;
-                ai_array[i].status = 1;
+                ai_array[i].status = 1; // 越上限
             } else if (new_value > 4.5 && new_value < 5.5) {
                 new_value = 5;
-                ai_array[i].status = 3;
+                ai_array[i].status = 3; // 越死区
             } else {
-                ai_array[i].status = 0;
+                ai_array[i].status = 0; // 正常
             }
-            ai_array[i].value = new_value;
-            ai_array[i].raw_value = new_value;
+            ai_array[i].value = new_value; // 更新模拟量值
+            ai_array[i].raw_value = new_value; // 更新模拟量原始值
         }
 
         // 更新计算模拟量数据
@@ -194,15 +194,15 @@ int main() {
                 if (ch >= 'A' && ch <= 'Z') {
                     int ai_index = ch - 'A';
                     if (ai_index < NUM_AI) {
-                        num_ai_used++;
-                        sum_ai_value += ai_array[ai_index].value;
+                        num_ai_used++;  // 统计使用的模拟量数量
+                        sum_ai_value += ai_array[ai_index].value;   // 统计使用的模拟量值之和
                     }
                 }
             }
             if (num_ai_used > 0) {
-                cn_array[i].value = sum_ai_value / num_ai_used;
+                cn_array[i].value = sum_ai_value / num_ai_used;  // 计算模拟量值
             } else {
-                cn_array[i].value = 0;
+                cn_array[i].value = 0;   // 没有使用模拟量，计算模拟量值为0
             }
         }
     }
