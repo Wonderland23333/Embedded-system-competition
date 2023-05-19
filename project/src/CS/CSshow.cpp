@@ -14,8 +14,8 @@ int main(int argc, char *argv[])
 
     // 创建表格
     QTableWidget tableWidget;
-    tableWidget.setColumnCount(3);  // 设置3列
-    tableWidget.setHorizontalHeaderLabels({"编号", "姓名", "年龄"});  // 设置表头
+    tableWidget.setColumnCount(5);  // 设置5列
+    tableWidget.setHorizontalHeaderLabels({"a倾角", "b倾角", "b辐射" ,"直接辐射", "散射辐射"});  // 设置表头
 
     // 连接数据库
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
@@ -29,19 +29,24 @@ int main(int argc, char *argv[])
 
     // 查询数据
     QSqlQuery query;
-    query.exec("SELECT * FROM shower_dataitem");
+    query.exec("SELECT * FROM shower_sensordata");
     int row = 0;
     while (query.next()) {
         // 插入一行数据
         tableWidget.insertRow(row);
 
         // 设置数据项
-        QTableWidgetItem *item1 = new QTableWidgetItem(query.value(0).toString());
-        QTableWidgetItem *item2 = new QTableWidgetItem(query.value(1).toString());
-        QTableWidgetItem *item3 = new QTableWidgetItem(query.value(2).toString());
-        tableWidget.setItem(row, 0, item1);
-        tableWidget.setItem(row, 1, item2);
-        tableWidget.setItem(row, 2, item3);
+        QTableWidgetItem *a_angle = new QTableWidgetItem(query.value(0).toString());//太阳光与水平面夹角
+        QTableWidgetItem *R_radiate = new QTableWidgetItem(query.value(1).toString());//倾角为b的斜面上的辐射
+        QTableWidgetItem *S_radiate = new QTableWidgetItem(query.value(2).toString());//水平面上直接辐射
+        QTableWidgetItem *D_radiate = new QTableWidgetItem(query.value(3).toString());//水平面上散射辐射
+        QTableWidgetItem *b_angle = new QTableWidgetItem(query.value(4).toString());//太阳能电池方阵倾角
+        tableWidget.setItem(row, 0, a_angle);
+        tableWidget.setItem(row, 1, b_angle);
+        tableWidget.setItem(row, 2, R_radiate);
+        tableWidget.setItem(row, 3, S_radiate);
+        tableWidget.setItem(row, 4, D_radiate);
+
 
         row++;
     }
