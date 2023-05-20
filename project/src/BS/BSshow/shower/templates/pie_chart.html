@@ -3,52 +3,52 @@
 <html>
 <head>
     <title>Data List</title>
-    <script src="{% static 'chart.js/dist/chart.js' %}"></script>
+    <script src="{% static 'chart.umd.min.js' %}"></script>
 </head>
 <body>
-    <h1>Data List</h1>
-    {% for sensor_data in sensor_data_list %}
-        <div id="chart-{{ sensor_data.id }}" class="chart" 
-            data-a-angle="{{ sensor_data.a_angle }}"
-            data-r-radiate="{{ sensor_data.R_radiate }}"
-            data-s-radiate="{{ sensor_data.S_radiate }}"
-            data-d-radiate="{{ sensor_data.D_radiate }}"
-            data-b-angle="{{ sensor_data.b_angle }}">
-        </div>
-    {% endfor %}
-
-    <script>
-        // 获取所有具有类名 "chart" 的元素
-        var charts = document.getElementsByClassName("chart");
-
-        // 遍历每个图表元素
-        Array.from(charts).forEach(function(chart) {
-            // 从元素的 dataset 中获取数据
-            var aAngle = chart.dataset.aAngle;
-            var rRadiate = chart.dataset.rRadiate;
-            var sRadiate = chart.dataset.sRadiate;
-            var dRadiate = chart.dataset.dRadiate;
-            var bAngle = chart.dataset.bAngle;
-
-            // 创建图表并渲染
-            var data = {
-                labels: ['A Angle', 'R Radiate', 'S Radiate', 'D Radiate', 'B Angle'],
-                datasets: [{
-                    data: [aAngle, rRadiate, sRadiate, dRadiate, bAngle],
-                    backgroundColor: ['red', 'blue', 'green', 'yellow', 'orange']
-                }]
-            };
-
-            var options = {
-                // 配置选项
-            };
-
-            new Chart(chart, {
-                type: 'pie',
-                data: data,
-                options: options
-            });
-        });
-    </script>
+<h1>Data List</h1>
+{% for sensor_data in sensor_data_list %}
+<canvas id="chart-{{ sensor_data.id }}" class="chart"
+        data-a-angle="{{ sensor_data.a_angle }}"
+        data-r-radiate="{{ sensor_data.R_radiate }}"
+        data-s-radiate="{{ sensor_data.S_radiate }}"
+        data-d-radiate="{{ sensor_data.D_radiate }}"
+        data-b-angle="{{ sensor_data.b_angle }}">
+</canvas>
+{% endfor %}
 </body>
+
+<script>
+    // 获取所有具有类名 "chart" 的元素
+    var charts = document.getElementsByClassName("chart");
+
+    // 遍历每个图表元素
+    Array.from(charts).forEach(function (chart) {
+        // 从元素的 dataset 中获取数据
+        var aAngle = chart.dataset.aAngle;
+        var rRadiate = chart.dataset.rRadiate;
+        var sRadiate = chart.dataset.sRadiate;
+        var dRadiate = chart.dataset.dRadiate;
+        var bAngle = chart.dataset.bAngle;
+
+        // 创建图表并渲染
+        var data = {
+            labels: ['A Angle', 'R Radiate', 'S Radiate', 'D Radiate', 'B Angle'],
+            datasets: [{
+                data: [aAngle, rRadiate, sRadiate, dRadiate, bAngle],
+                backgroundColor: ['red', 'blue', 'green', 'yellow', 'orange']
+            }]
+        };
+
+        var options = {
+            // 配置选项
+        };
+
+        new Chart(chart, {
+            type: 'pie',
+            data: data,
+            options: options
+        });
+    });
+</script>
 </html>

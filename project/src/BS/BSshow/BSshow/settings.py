@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,7 +26,7 @@ SECRET_KEY = 'django-insecure-l4e+(qca-j(&on#7dcllivkegu6h7um2q9dupwpn@irmux*3r_
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["47.120.40.78"]
+ALLOWED_HOSTS = ["47.120.40.78", "127.0.0.1"]
 
 
 # Application definition
@@ -119,10 +120,13 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL = 'static/'
 # 静态文件的根目录路径
 STATIC_ROOT = '/root/loongarch/project/src/BS/BSshow/static/'
 
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "common_static")
+]
 
 
 # Default primary key field type

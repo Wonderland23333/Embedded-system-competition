@@ -27,4 +27,4 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('data_list/', data_list, name='data_list'),
     path('pie_chart/', pie_chart, name='pie_chart'),
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
