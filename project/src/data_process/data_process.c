@@ -1,12 +1,68 @@
 #include"data_process.h"
+int light_intensity()
+{
+    int fd_light;
+    void *gpio_map, *adc_map;
+    volatile unsigned int *gpio, *adc;
+    int val;
 
+    // 打开 /dev/mem 文件
+    if ((fd_light = open("/dev/mem", O_RDWR | O_SYNC)) < 0) {
+        fprintf(stderr, "无法打开 /dev/mem 文件\n");
+        exit(EXIT_FAILURE);
+    }
+
+    // 映射 GPIO 控制模块的寄存器地址
+    gpio_map = mmap(NULL, getpagesize(), PROT_READ | PROT_WRITE, MAP_SHARED, fd_light, GPIO_BASE_ADDR & ~0xfff);
+    if (gpio_map == MAP_FAILED) {
+        fprintf(stderr, "无法映射 GPIO 控制模块内存地址\n");
+        exit(EXIT_FAILURE);
+    }
+
+    gpio = (volatile unsigned int *)gpio_map;
+
+    // 配置 GPIO9 和 GPIO10
+    val = *(gpio + 1);              // GPIO控制模块中第二个寄存器表示输入输出控制，每个控制位占2bit，GPIO9和GPIO10各占1位
+    val = val & ~(0x3 << 18);            // clear bit 18~19
+    val |= (0x1 << 18);             // use as output
+    val &= ~(0x3 << 20);            // clear bit 20~21
+    val |= (0x1 << 20);
+    *(gpio + 1) = val;
+
+    // 映射 ADC 模块的寄存器地址
+    adc_map = mmap(NULL, getpagesize(), PROT_READ | PROT_WRITE, MAP_SHARED, fd_light, (ADC_BASE_ADDR & ~0xfff) + 0x1000);
+    if (adc_map == MAP_FAILED) {
+        fprintf(stderr, "无法映射 ADC 模块内存地址\n");
+        exit(EXIT_FAILURE);
+    }
+
+    adc = (volatile unsigned int *)adc_map;
+
+    // 配置 ADC 模块
+    *(adc + 2) = 0xff;         
+        // 发送采样请求
+    *(adc + 1) = 0x8;
+
+        // 等待采样完成
+    while (!(*(adc + 0) & 0x1));
+
+        // 读取采样值
+    val = *(adc + 1) & 0xfff;
+
+    printf("光照强度为 %d\n", val);
+    close(fd_light);
+    sleep(1);
+    
+    return val;
+
+}
 float temper() //温度获取
 {
     float voltage = 0.0;
     float temperature = 0.0;
     voltage = read_adc_temper();
     temperature = (voltage - SENSOR_B) / SENSOR_A; // 根据特性曲线计算出工程值
-    printf("Temperature: %f\n", temperature);
+   // printf("Temperature: %f\n", temperature);
   //  data_handle(&temperature);
     return temperature;
 }
@@ -29,7 +85,7 @@ float electric()//电流获取
 
         // 处理电流信号并输出到DAC输出
         float pid_output = pid_controller(current_setpoint, current, Kp, Ki, Kd);
-        digital_output = convert_voltage_to_digital(pid_output);
+        digital_output = convert_voltage_to_digital(pid_output); 
         send_digital_value_to_dac(digital_output);
   //  }
     return digital_output;

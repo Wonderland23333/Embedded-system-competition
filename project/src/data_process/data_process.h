@@ -18,6 +18,7 @@
 #include <time.h>
 #include <sys/time.h>
 #include <sqlite3.h>
+#include <sys/mman.h>
 //#define ADC_RESOLUTION 1024
 
 // 定义温度传感器特性曲线参数
@@ -29,12 +30,23 @@
 #define ADC_RESOLUTION 4095    // ADC分辨率
 
 
+#define GPIO_BASE_ADDR 0xBFD00300
+#define GPIO_BIT_9 512
+#define GPIO_BIT_10 1024
+
+#define ADC_BASE_ADDR 0x1f000300
+#define ADC_CONTROL_ADDR 0x1f000300
+#define ADC_STATUS_ADDR 0x1f000304
+#define ADC_DATA_ADDR 0x1f000308
+
 void data_handle(float *temperature,float *electric);//数据处理
 void insert_mysql(float *temperature,long long *time);//录入数据库
 long long get_timestamp(void);//获取时间戳函数
 void get_format_time_string(char *str_time);//获取格式化时间
+//int light_dev_init(int *fd_light);
 float temper();//获取温度
 float electric();//电流获取
+int light_intensity();//获取光照强度
 float read_adc_temper();//AD温度采集数据
 float convert_adc_reading_to_voltage(int adc_reading);
 float convert_adc_reading_to_current(int adc_reading, float current_ratio);
