@@ -18,7 +18,7 @@
 #include <time.h>
 #include <sys/time.h>
 #include <sqlite3.h>
-#define ADC_RESOLUTION 1024
+//#define ADC_RESOLUTION 1024
 
 // 定义温度传感器特性曲线参数
 #define SENSOR_A 0.00125 // 斜率
@@ -27,8 +27,7 @@
 #define DI_SWITCH 1 // DI开关量，1为打开，0为关闭
 #define ADC_REF_VOLTAGE 3.3    // ADC参考电压
 #define ADC_RESOLUTION 4095    // ADC分辨率
-#define DAC_REF_VOLTAGE 3.3    // DAC参考电压
-#define DAC_RESOLUTION 4095    // DAC分辨率
+
 
 void data_handle(float *temperature,float *electric);//数据处理
 void insert_mysql(float *temperature,long long *time);//录入数据库

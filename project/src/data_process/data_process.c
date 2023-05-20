@@ -20,7 +20,7 @@ float electric()//电流获取
     float integral = 0.0;         // PID积分量
     float previous_error = 0.0;   // 上一次误差
     float digital_output;
-    while(1) {
+  //  while(1) {
         // 读取电流传感器
         int sensor_reading = read_adc_electric();
 
@@ -31,7 +31,7 @@ float electric()//电流获取
         float pid_output = pid_controller(current_setpoint, current, Kp, Ki, Kd);
         digital_output = convert_voltage_to_digital(pid_output);
         send_digital_value_to_dac(digital_output);
-    }
+  //  }
     return digital_output;
 }
 float read_adc_temper()
@@ -49,7 +49,7 @@ void data_handle(float *temperature,float *electric)
     if(LOW_TEMPER <= temp <=HIGH_temper)
     return ;
     else
-    ;//蜂鸣器警告
+    return ;//蜂鸣器警告
 }
 
 long long get_timestamp(void)//获取时间戳函数
@@ -91,7 +91,7 @@ float convert_adc_reading_to_current(int adc_reading, float current_ratio) {
 }
 
 int convert_voltage_to_digital(float voltage) {
-    int digital_value = (int)(voltage * DAC_RESOLUTION / DAC_REF_VOLTAGE);
+    int digital_value = (int)(voltage * ADC_RESOLUTION / ADC_REF_VOLTAGE);
     return digital_value;
 }
 
