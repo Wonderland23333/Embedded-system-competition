@@ -15,3 +15,8 @@ def line_chart(request):
     sensor_data_list_json = json.dumps(list(sensor_data_list.values()))
     return render(request, 'line_chart.html', {'sensor_data_list_json': sensor_data_list_json})
 
+def bar_chart(request):
+    sensor_data_list = SensorData.objects.all()
+    sensor_data_list_json = json.dumps(list(sensor_data_list.values()))
+    return render(request, 'bar_chart.html', {'sensor_data_list_json': sensor_data_list_json})
+

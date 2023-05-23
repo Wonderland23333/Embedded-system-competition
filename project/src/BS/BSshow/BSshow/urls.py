@@ -18,6 +18,7 @@ from django.urls import path
 from shower.views import data_list
 from shower.views import pie_chart
 from shower.views import line_chart
+from shower.views import bar_chart
 from django.shortcuts import redirect
 from django.conf.urls.static import static
 from django.conf import settings 
@@ -29,4 +30,5 @@ urlpatterns = [
     path('data_list/', data_list, name='data_list'),
     path('pie_chart/', pie_chart, name='pie_chart'),
     path('line_chart/', line_chart, name='line_chart'),
+    path('bar_chart/', bar_chart, name='bar_chart'),
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

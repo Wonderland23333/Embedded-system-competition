@@ -7,5 +7,5 @@ class SensorData(models.Model):
     R_radiate = models.IntegerField()
     S_radiate = models.IntegerField()
     D_radiate = models.IntegerField()
-    b_anglee = models.IntegerField()
+    b_angle = models.IntegerField()
     # 定义其他字段
