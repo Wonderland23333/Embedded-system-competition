@@ -1,0 +1,7 @@
+/root/loongarch/project/src/CS/CMakeFiles/install/strip.dir
+/root/loongarch/project/src/CS/CMakeFiles/edit_cache.dir
+/root/loongarch/project/src/CS/CMakeFiles/CSshow.dir
+/root/loongarch/project/src/CS/CMakeFiles/rebuild_cache.dir
+/root/loongarch/project/src/CS/CMakeFiles/list_install_components.dir
+/root/loongarch/project/src/CS/CMakeFiles/install/local.dir
+/root/loongarch/project/src/CS/CMakeFiles/install.dir
