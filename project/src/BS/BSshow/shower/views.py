@@ -1,6 +1,29 @@
 from django.shortcuts import render
 from .models import SensorData
+<<<<<<< HEAD
 
 def data_list(request):
     data_items = SensorData.objects.all()
     return render(request, 'data_list.html', {'data_items': data_items})
+=======
+import json
+
+def data_list(request):
+    sensor_data_list = SensorData.objects.all()
+    return render(request, 'data_list.html', {'sensor_data_list': sensor_data_list})
+
+def pie_chart(request):
+    sensor_data_list = SensorData.objects.all()
+    return render(request, 'pie_chart.html', {'sensor_data_list': sensor_data_list})
+
+def line_chart(request):
+    sensor_data_list = SensorData.objects.all()
+    sensor_data_list_json = json.dumps(list(sensor_data_list.values()))
+    return render(request, 'line_chart.html', {'sensor_data_list_json': sensor_data_list_json})
+
+def bar_chart(request):
+    sensor_data_list = SensorData.objects.all()
+    sensor_data_list_json = json.dumps(list(sensor_data_list.values()))
+    return render(request, 'bar_chart.html', {'sensor_data_list_json': sensor_data_list_json})
+
+>>>>>>> 47fcea48c89dbc56470dca9f4b7e6d7840425230
