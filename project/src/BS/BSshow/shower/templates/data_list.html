@@ -7,9 +7,8 @@
     <h1>Data List</h1>
     <ul>
         {% for sensor_data in sensor_data_list %}
-        <li>{{ sensor_data.name }}: {{ sensor_data.value }}</li>
+        <li>{{ sensor_data.id }},{{ sensor_data.a_angle }}, {{ sensor_data.R_radiate }}, {{ sensor_data.S_radiate }}, {{ sensor_data.D_radiate }}, {{ sensor_data.b_angle }}</li>
         {% endfor %}
-    </ul>
+    </ul>    
 </body>
-
 </html>
