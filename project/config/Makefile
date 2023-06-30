@@ -11,17 +11,24 @@ ubuntu_config:
 # cd ${HOME} && gg git clone https://github.com/loongson/qemu.git
 # cd ${HOME}/qemu && mkdir build && cd build && ../configure --target-list=loongarch64-softmmu,loongarch64-linux-user && make -j$(nproc)
 # cd ${HOME}/qemu && sudo make install
-# cd ${HOME} && wget https://download.qemu.org/qemu-8.0.0.tar.xz
-# cd ${HOME} && tar xvJf qemu-8.0.0.tar.xz
-# cd ${HOME}/qemu-8.0.0 && ./configure --target-list=/loongarch64-softmmu,/loongarch64-linux-user
-# cd ${HOME}/qemu-8.0.0 && make -j$(nproc)
-# cd ${HOME}/qemu-8.0.0 && sudo make install
-# cd ${HOME} && rm qemu-8.0.0.tar.xz
+	cd ${HOME} && wget https://download.qemu.org/qemu-8.0.0.tar.xz
+	cd ${HOME} && tar xvJf qemu-8.0.0.tar.xz
+	cd ${HOME}/qemu-8.0.0 && ./configure --target-list=loongarch64-softmmu,loongarch64-linux-user
+	cd ${HOME}/qemu-8.0.0 && make -j$(nproc)
+	cd ${HOME}/qemu-8.0.0 && sudo make install
+	cd ${HOME} && rm qemu-8.0.0.tar.xz
 	make clean
 	qemu-system-loongarch64 --version
 	qemu-loongarch64 --version
 
 test:
-	sudo sh -c 'echo "export PATH=\$$PATH:'"$$(pwd)"'" >> /etc/profile'
-	cat /etc/profile
+# sudo sh -c 'echo "export PATH=\$$PATH:'"$$(pwd)"'" >> /etc/profile'
+# cat /etc/profile
+	cd ${HOME}/qemu-8.0.0 && ./configure --target-list=loongarch64-softmmu,loongarch64-linux-user
+	cd ${HOME}/qemu-8.0.0 && make -j$(nproc)
+	cd ${HOME}/qemu-8.0.0 && sudo make install
+	cd ${HOME} && rm qemu-8.0.0.tar.xz
+	make clean
+	qemu-system-loongarch64 --version
+	qemu-loongarch64 --version
 	
