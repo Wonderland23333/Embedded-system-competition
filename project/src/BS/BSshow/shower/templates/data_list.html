@@ -1,14 +1,104 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <title>Data List</title>
+  <title>Data List</title>
+  <style>
+    /* Global styles */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f5f5;
+    }
+
+    /* Container styles */
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #fff;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Heading styles */
+    h1 {
+      color: #333;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    /* List styles */
+    ul {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    /* List item styles */
+    li {
+      margin-bottom: 20px;
+      padding: 20px;
+      border: 1px solid #ccc;
+      background-color: #f9f9f9;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      transition: background-color 0.3s ease;
+    }
+
+    li:hover {
+      background-color: #f5f5f5;
+    }
+
+    /* Data label styles */
+    li span {
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    /* ID label styles */
+    li span.id {
+      font-weight: bold;
+      color: #555;
+    }
+
+    /* Temperature label styles */
+    li span.temperature {
+      color: #e74c3c;
+    }
+
+    /* Humidity label styles */
+    li span.humidity {
+      color: #3498db;
+    }
+
+    /* Light label styles */
+    li span.light {
+      color: #f1c40f;
+    }
+
+    /* Date label styles */
+    li span.date {
+      font-size: 12px;
+      color: #555;
+    }
+  </style>
 </head>
+
 <body>
+  <div class="container">
     <h1>Data List</h1>
     <ul>
         {% for sensor_data in sensor_data_list %}
-        <li>{{ sensor_data.id }},{{ sensor_data.a_angle }}, {{ sensor_data.R_radiate }}, {{ sensor_data.S_radiate }}, {{ sensor_data.D_radiate }}, {{ sensor_data.b_angle }}</li>
+        <li>
+            <span class="id">ID: {{ sensor_data.id }}</span>
+            <span class="temperature">Temperature: {{ sensor_data.temperature }}℃</span>
+            <span class="humidity">Humility: {{ sensor_data.humility }}%Rh</span>
+            <span class="light">Light: {{ sensor_data.lighten }}Lux</span>
+            <span class="date">Date: {{ sensor_data.date }}</span>
+        </li>
         {% endfor %}
-    </ul>    
+    </ul>
+  </div>
 </body>
+
 </html>

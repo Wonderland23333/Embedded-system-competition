@@ -93,9 +93,9 @@
         var idCell = document.createElement('td');
         idCell.textContent = rowData.id;
         var valueCell = document.createElement('td');
-        valueCell.textContent = rowData.a_angle + ', ' + rowData.R_radiate + ', ' + rowData.S_radiate + ', ' + rowData.D_radiate + ', ' + rowData.b_angle;
+        valueCell.textContent = "温度：" + rowData.temperature + '℃, 湿度：' + rowData.humility + '%Rh, 光强：' + rowData.lighten + "Lux";
         var timestampCell = document.createElement('td');
-        timestampCell.textContent = rowData.timestamp;
+        timestampCell.textContent = rowData.date;
         row.appendChild(idCell);
         row.appendChild(valueCell);
         row.appendChild(timestampCell);
@@ -108,18 +108,14 @@
       var sum1 = 0;
       var sum2 = 0;
       var sum3 = 0;
-      var sum4 = 0;
-      var sum5 = 0;
 
       data.forEach(function(data) {
-        sum1 += data.a_angle;
-        sum2 += data.R_radiate;
-        sum3 += data.S_radiate;
-        sum4 += data.D_radiate;
-        sum5 += data.b_angle;
+        sum1 += data.temperature;
+        sum2 += data.humility;
+        sum3 += data.lighten;
       });
 
-      return [sum1, sum2, sum3, sum4, sum5];
+      return [sum1, sum2, sum3];
     }
 
     // 填充数据总和行
@@ -173,7 +169,7 @@
       row.appendChild(emptyCell);
       tableBody.appendChild(row);
     }
-
+    //console.log(typeof(sensorData))
     // 初始加载表格数据
     populateTable(sensorData);
 
@@ -190,7 +186,8 @@
           if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
             var response = xhr.response;
             // 更新实时数据
-            realtimeData = response;
+            realtimeData = JSON.parse(response);
+            console.log(typeof(realtimeData))
             // 更新表格数据
             populateTable(realtimeData);
           }

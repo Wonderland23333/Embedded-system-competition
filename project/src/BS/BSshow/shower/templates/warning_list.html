@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Warning List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f2f2f2; /* 用您想要的背景颜色替换 */
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        li {
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            background-color: #f9f9f9;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        li:hover {
+            background-color: #db6c6c;
+        }
+        .data {
+            font-weight: bold;
+        }
+        .date {
+            color: #888;
+        }
+        .warning {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Warning List</h1>
+        <ul>
+            {% for sensor_data in sensor_data_list %}
+            <li>
+                <!-- <span class="data">数据：{{ sensor_data.data }}</span><br> -->
+                <span class="date">时间：{{ sensor_data.date }}</span><br>
+                
+                <!-- 根据警告类型打印对应的数据类型 -->
+                {% if sensor_data.warning == "temperature warn" %}
+                <span class="temperature">Temperature: {{ sensor_data.data }}℃</span><br>
+                {% elif sensor_data.warning == "humility warn" %}
+                <span class="humidity">Humility: {{ sensor_data.data }}%Rh</span><br>
+                {% elif sensor_data.warning == "lighten warn" %}
+                <span class="light">Light: {{ sensor_data.data }}Lux</span><br>
+                {% endif %}
+                <span class="warning">警告：{{ sensor_data.warning }}</span><br>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>
