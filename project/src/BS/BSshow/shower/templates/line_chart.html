@@ -2,82 +2,188 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Data List</title>
-    <script src="{% static 'chart.umd.min.js' %}"></script>
+  <meta charset="UTF-8">
+  <title>Data List</title>
+  <!-- 引入 Plotly.js 库 -->
+  <script src="{% static 'ploty.js' %}"></script>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+    
+    .chart-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+    }
+    
+    #line-chart {
+      height: 90%;
+      width: 90%;
+    }
+    .header {
+        background-color: #333;
+        padding: 20px;
+    }
+    .header ul {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        text-align: center;
+    }
+    .header li {
+        display: inline-block;
+    }
+    .header li a {
+        display: block;
+        color: #000;
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
+        transition: background-color 0.3s;
+        font-weight: bold;
+    }
+    .header li a:hover {
+        background-color: #4CAF50;
+    }
+  </style>
 </head>
 <body>
-<h1>Data List</h1>
-<canvas id="line-chart"></canvas>
-</body>
+    <div class="header">
+        <ul>
+            <li><a href="../admin/">管理后台</a></li>
+            <li><a href="../data_list/">数据列表</a></li>
+            <li><a href="../pie_chart/">饼状图</a></li>
+            <li><a href="../line_chart/">折线图</a></li>
+            <li><a href="../bar_chart/">柱状图</a></li>
+            <li><a href="../simple_count/">简单统计</a></li>
+            <li><a href="../get_sensor_data/">传感器数据获取</a></li>
+            <li><a href="../warning_list/">警告列表</a></li>
+        </ul>
+    </div>
+    <div class="chart-container">
+        <div id="line-chart"></div>
+      </div>
+  <script>
+    // 获取后端传递的数据
+    var sensorDataList = JSON.parse('{{ sensor_data_list_json|safe }}');
 
-<script>
-// 获取后端传递的数据
-var sensorDataList = JSON.parse('{{ sensor_data_list_json|safe }}');
+    // 提取数据
+    var ids = [];
+    var aAngles = [];
+    var rRadiates = [];
+    var sRadiates = [];
 
+    sensorDataList.forEach(function(sensorData) {
+        ids.push(sensorData.date);
+        aAngles.push(sensorData.temperature);
+        rRadiates.push(sensorData.humility);
+        sRadiates.push(sensorData.lighten);
+    });
 
-// 提取数据
-var ids = [];
-var aAngles = [];
-var rRadiates = [];
-var sRadiates = [];
-var dRadiates = [];
-var bAngles = [];
-
-sensorDataList.forEach(function(sensorData) {
-    ids.push(sensorData.id);
-    aAngles.push(sensorData.a_angle);
-    rRadiates.push(sensorData.R_radiate);
-    sRadiates.push(sensorData.S_radiate);
-    dRadiates.push(sensorData.D_radiate);
-    bAngles.push(sensorData.b_angle);
-});
-
-// 创建图表并渲染
-var data = {
-    labels: ids,
-    datasets: [
-        {
-            label: 'A Angle',
-            data: aAngles,
-            borderColor: 'red',
-            fill: false
-        },
-        {
-            label: 'R Radiate',
-            data: rRadiates,
-            borderColor: 'blue',
-            fill: false
-        },
-        {
-            label: 'S Radiate',
-            data: sRadiates,
-            borderColor: 'green',
-            fill: false
-        },
-        {
-            label: 'D Radiate',
-            data: dRadiates,
-            borderColor: 'yellow',
-            fill: false
-        },
-        {
-            label: 'B Angle',
-            data: bAngles,
-            borderColor: 'orange',
-            fill: false
+    // 创建图表并渲染
+    var data = [
+      {
+        x: ids,
+        y: aAngles,
+        type: 'scatter',
+        name: 'temperature',
+        line: {
+          color: 'red'
         }
-    ]
-};
+      },
+      {
+        x: ids,
+        y: rRadiates,
+        type: 'scatter',
+        name: 'humidity',
+        line: {
+          color: 'blue'
+        }
+      },
+      {
+        x: ids,
+        y: sRadiates,
+        type: 'scatter',
+        name: 'light',
+        line: {
+          color: 'green'
+        }
+      }
+    ];
 
-var options = {
-    responsive: true
-};
+    var layout = {
+    //   height: 600, // 设置图表的高度为自适应
+    //   width: 1080,   // 设置图表的宽度为自适应
+      title: 'Line Chart',
+      xaxis: {
+        title: 'x-axis'
+      },
+      yaxis: {
+        title: 'y-axis'
+      },
+      dragmode: 'pan',
+      hovermode: 'closest',
+      zoom: {      
+        wheel: true,
+        zoom: {
+          dragmode: false,
+          mode: 'y'
+        },
+        pan: {
+          dragmode: false,
+          mode: 'y'
+        }
+      }
+    };
 
-var ctx = document.getElementById('line-chart').getContext('2d');
-new Chart(ctx, {
-    type: 'line',
-    data: data,
-    options: options
-});
-</script>
+    // 绘制图表
+    Plotly.newPlot('line-chart', data, layout);
+    function zoomChart(e) {
+    var zoomFactor = e.deltaY > 0 ? 1.1 : 0.9; // 设置缩放因子
+
+    var plot = document.getElementById('line-chart');
+    var rect = plot.getBoundingClientRect();
+
+    // var x = e.clientX - rect.left; // 鼠标相对于图表左上角的x坐标
+    var y = e.clientY - rect.top; // 鼠标相对于图表左上角的y坐标
+
+    // var xaxisRange = layout.xaxis.range; // x轴范围
+    var yaxisRange = layout.yaxis.range; // y轴范围
+
+    // var relX = layout.xaxis.range[0] + (x / rect.width) * (xaxisRange[1] - xaxisRange[0]);
+    var relY = layout.yaxis.range[0] + (1 - y / rect.height) * (yaxisRange[1] - yaxisRange[0]);
+
+    //   var newxaxisRange = [
+    //     relX - (relX - xaxisRange[0]) * zoomFactor,
+    //     relX + (xaxisRange[1] - relX) * zoomFactor
+    //   ];
+
+    var newyaxisRange = [
+        relY - (relY - yaxisRange[0]) * zoomFactor,
+        relY + (yaxisRange[1] - relY) * zoomFactor
+    ];
+
+    // 设置新的x轴和y轴范围
+    Plotly.relayout('line-chart', {
+        // 'xaxis.range': newxaxisRange,
+        'yaxis.range': newyaxisRange
+    });
+    }
+    // 监听窗口大小变化
+    window.addEventListener("resize", function () {
+        Plotly.relayout("line-chart", {
+          height: window.innerHeight * 0.9,
+          width: window.innerWidth * 0.9,
+        });
+      });
+    // 添加鼠标滚轮事件监听器
+    document.getElementById('line-chart').addEventListener('wheel', zoomChart, { passive: true });
+  </script>
+</body>
 </html>

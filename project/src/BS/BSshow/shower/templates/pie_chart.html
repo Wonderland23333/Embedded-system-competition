@@ -4,39 +4,77 @@
 <head>
     <title>Data List</title>
     <script src="{% static 'chart.umd.min.js' %}"></script>
+<style>
+        .header {
+            background-color: #333;
+            padding: 20px;
+        }
+        .header ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            text-align: center;
+        }
+        .header li {
+            display: inline-block;
+        }
+        .header li a {
+            display: block;
+            color: #000;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            transition: background-color 0.3s;
+            font-weight: bold;
+        }
+        .header li a:hover {
+            background-color: #4CAF50;
+        }
+    </style>
 </head>
 <body>
+<div class="header">
+        <ul>
+            <li><a href="../admin/">管理后台</a></li>
+            <li><a href="../data_list/">数据列表</a></li>
+            <li><a href="../pie_chart/">饼状图</a></li>
+            <li><a href="../line_chart/">折线图</a></li>
+            <li><a href="../bar_chart/">柱状图</a></li>
+            <li><a href="../simple_count/">简单统计</a></li>
+            <li><a href="../get_sensor_data/">传感器数据获取</a></li>
+            <li><a href="../warning_list/">警告列表</a></li>
+        </ul>
+    </div>
 <h1>Data List</h1>
-{% for sensor_data in sensor_data_list %}
-<canvas id="chart-{{ sensor_data.id }}" class="chart"
-        data-a-angle="{{ sensor_data.a_angle }}"
-        data-r-radiate="{{ sensor_data.R_radiate }}"
-        data-s-radiate="{{ sensor_data.S_radiate }}"
-        data-d-radiate="{{ sensor_data.D_radiate }}"
-        data-b-angle="{{ sensor_data.b_angle }}">
+{% with sensor_data=sensor_data_list %}
+<canvas id="chart-{{ sensor_data.date }}" class="chart"
+        data-temperature="{{ sensor_data.temperature }}"
+        data-humility="{{ sensor_data.humility }}"
+        data-lighten="{{ sensor_data.lighten }}"
+>
 </canvas>
-{% endfor %}
+{% endwith %}
 </body>
 
 <script>
     // 获取所有具有类名 "chart" 的元素
     var charts = document.getElementsByClassName("chart");
-
+    // 存储图表对象的引用
+    var chartInstance;
     // 遍历每个图表元素
     Array.from(charts).forEach(function (chart) {
         // 从元素的 dataset 中获取数据
-        var aAngle = chart.dataset.aAngle;
-        var rRadiate = chart.dataset.rRadiate;
-        var sRadiate = chart.dataset.sRadiate;
-        var dRadiate = chart.dataset.dRadiate;
-        var bAngle = chart.dataset.bAngle;
+        var aAngle = chart.dataset.temperature;
+        var rRadiate = chart.dataset.humility;
+        var sRadiate = chart.dataset.lighten;
 
         // 创建图表并渲染
         var data = {
-            labels: ['A Angle', 'R Radiate', 'S Radiate', 'D Radiate', 'B Angle'],
+            labels: ['temperature', 'humidity', 'light'],
             datasets: [{
-                data: [aAngle, rRadiate, sRadiate, dRadiate, bAngle],
-                backgroundColor: ['red', 'blue', 'green', 'yellow', 'orange']
+                data: [aAngle, rRadiate, sRadiate],
+                backgroundColor: ['red', 'blue', 'green']
             }]
         };
 
@@ -44,11 +82,55 @@
             // 配置选项
         };
 
-        new Chart(chart, {
+        chartInstance = new Chart(chart, {
             type: 'pie',
             data: data,
             options: options
         });
     });
+        // 更新图表数据的函数
+    function updateChartData() {
+        // 获取所有具有类名 "chart" 的元素
+        var charts = document.getElementsByClassName("chart");
+
+        // 遍历每个图表元素
+        Array.from(charts).forEach(function (chart) {
+            // 发起 AJAX 请求获取数据
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "../get_sensor_data/", true);
+            xhr.responseType = "json"; // 设置响应类型为 JSON
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    // 从服务器响应中获取数据
+                    var data = JSON.parse(xhr.response);
+                    console.log(data.length);
+                    var aAngle = data[data.length-1].temperature;
+                    var rRadiate = data[data.length-1].humility;
+                    var sRadiate = data[data.length-1].lighten;
+
+                    // 更新图表数据
+                    var data = {
+                        labels: ['temperature', 'humidity', 'light'],
+                        datasets: [{
+                            data: [aAngle, rRadiate, sRadiate],
+                            backgroundColor: ['red', 'blue', 'green']
+                        }]
+                    };
+                    //console.log(data);
+                    chartInstance.data = data;
+                    chartInstance.update();
+                    // new Chart(chart, {
+                    //     type: 'pie',
+                    //     data: data
+                    // });
+                    //chart.update(); // 更新图表
+                }
+            };
+            xhr.send();
+        });
+    }
+
+    // 每5秒调用一次 updateChartData()
+    setInterval(updateChartData, 5000);
 </script>
 </html>

@@ -11,7 +11,32 @@
       padding: 0;
       background-color: #f5f5f5;
     }
-
+    .header {
+        background-color: #333;
+        padding: 20px;
+    }
+    .header ul {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        text-align: center;
+    }
+    .header li {
+        display: inline-block;
+    }
+    .header li a {
+        display: block;
+        color: #000;
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
+        transition: background-color 0.3s;
+        font-weight: bold;
+    }
+    .header li a:hover {
+        background-color: #4CAF50;
+    }
     /* Container styles */
     .container {
       max-width: 800px;
@@ -81,14 +106,36 @@
       font-size: 12px;
       color: #555;
     }
+    
   </style>
+  <div class="header">
+    <ul>
+        <li><a href="../admin/">管理后台</a></li>
+        <li><a href="../data_list/">数据列表</a></li>
+        <li><a href="../pie_chart/">饼状图</a></li>
+        <li><a href="../line_chart/">折线图</a></li>
+        <li><a href="../bar_chart/">柱状图</a></li>
+        <li><a href="../simple_count/">简单统计</a></li>
+        <li><a href="../get_sensor_data/">传感器数据获取</a></li>
+        <li><a href="../warning_list/">警告列表</a></li>
+    </ul>
+</div>
 </head>
 
 <body>
   <div class="container">
     <h1>Data List</h1>
-    <ul>
-        {% for sensor_data in sensor_data_list %}
+    <form id="query-form">
+      <label for="start_time">Start Time:</label>
+      <input type="datetime-local" id="start_time" name="start_time" required>
+      <br>
+      <label for="end_time">End Time:</label>
+      <input type="datetime-local" id="end_time" name="end_time" required>
+      <br>
+      <button type="submit">Query</button>
+  </form>
+    <ul id="sensor-data-list">
+        {% for sensor_data in sensor_data_list reversed %}
         <li>
             <span class="id">ID: {{ sensor_data.id }}</span>
             <span class="temperature">Temperature: {{ sensor_data.temperature }}℃</span>
@@ -100,5 +147,72 @@
     </ul>
   </div>
 </body>
+<script>
+  function updateSensorDataList(data) {
+    var ul = document.getElementById('sensor-data-list');
+    ul.innerHTML = ''; // 清空列表内容
+    
+    // 反向遍历数据数组
+    for (var i = data.length - 1; i >= 0; i--) {
+      var sensor_data = data[i];
+      
+      // 创建 li 元素
+      var li = document.createElement('li');
+      
+      // 创建并设置其他 span 元素
+      var idSpan = document.createElement('span');
+      idSpan.className = 'id';
+      idSpan.textContent = 'ID: ' + sensor_data.id;
+      var temperatureSpan = document.createElement('span');
+      temperatureSpan.className = 'temperature';
+      temperatureSpan.textContent = 'Temperature: ' + sensor_data.temperature + '℃';
+      var humiditySpan = document.createElement('span');
+      humiditySpan.className = 'humidity';
+      humiditySpan.textContent = 'Humility: ' + sensor_data.humility + '%Rh';
+      var lightSpan = document.createElement('span');
+      lightSpan.className = 'light';
+      lightSpan.textContent = 'Light: ' + sensor_data.lighten + 'Lux';
+      var dateSpan = document.createElement('span');
+      dateSpan.className = 'date';
+      dateSpan.textContent = 'Date: ' + sensor_data.date;
+      
+      // 将创建的 span 元素添加到 li 元素中
+      li.appendChild(idSpan);
+      li.appendChild(temperatureSpan);
+      li.appendChild(humiditySpan);
+      li.appendChild(lightSpan);
+      li.appendChild(dateSpan);
+      
+      // 将创建的 li 元素添加到 ul 元素中
+      ul.appendChild(li);
+    }
+  }
+  // 监听表单的提交事件
+  document.getElementById('query-form').addEventListener('submit', function(event) {
+    event.preventDefault(); // 阻止表单的默认提交行为
 
+    var startTime = document.getElementById('start_time').value;
+    var endTime = document.getElementById('end_time').value;
+
+    var queryParams = 'start_time=' + encodeURIComponent(startTime) + '&end_time=' + encodeURIComponent(endTime);
+
+    fetch('/query_data?' + queryParams)
+      .then(function(response) {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error('Error: ' + response.status);
+        }
+      })
+      .then(function(data) {
+        data = JSON.parse(data);
+        console.log(data);
+        // 处理返回的 JSON 数据
+        updateSensorDataList(data);
+      })
+      .catch(function(error) {
+        console.error(error);
+      });
+  });
+</script>
 </html>

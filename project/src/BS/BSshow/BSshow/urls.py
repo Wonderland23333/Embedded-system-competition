@@ -22,6 +22,7 @@ from shower.views import bar_chart
 from shower.views import simple_count
 from shower.views import get_sensor_data
 from shower.views import get_warning_data
+from shower.views import query_data
 from django.shortcuts import redirect
 from django.conf.urls.static import static
 from django.conf import settings 
@@ -37,4 +38,5 @@ urlpatterns = [
     path('simple_count/', simple_count, name='simple_count'),
     path('get_sensor_data/', get_sensor_data, name='get_sensor_data'),
     path('warning_list/', get_warning_data, name='get_warning_data'),
+    path('query_data', query_data, name='query_data'),
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
