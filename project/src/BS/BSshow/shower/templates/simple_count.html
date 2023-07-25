@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Simple Count</title>
+  <style>
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+    th, td {
+      border: 1px solid black;
+      padding: 8px;
+      text-align: left;
+    }
+    optionsContainer {
+      margin-bottom: 10px;
+    }
+    .header {
+            background-color: #333;
+            padding: 20px;
+        }
+        .header ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            text-align: center;
+        }
+        .header li {
+            display: inline-block;
+        }
+        .header li a {
+            display: block;
+            color: #000;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            transition: background-color 0.3s;
+            font-weight: bold;
+        }
+        .header li a:hover {
+            background-color: #4CAF50;
+        }
+  </style>
+  <div class="header">
+    <ul>
+        <li><a href="../admin/">管理后台</a></li>
+        <li><a href="../data_list/">数据列表</a></li>
+        <li><a href="../pie_chart/">饼状图</a></li>
+        <li><a href="../line_chart/">折线图</a></li>
+        <li><a href="../bar_chart/">柱状图</a></li>
+        <li><a href="../simple_count/">简单统计</a></li>
+        <li><a href="../get_sensor_data/">传感器数据获取</a></li>
+        <li><a href="../warning_list/">警告列表</a></li>
+    </ul>
+</div>
+</head>
+<body>
+  <h1 id="currentDateTime"></h1>
+  
+  <div id="optionsContainer">
+    <label for="dataOptions">Select Data:</label>
+    <select id="dataOptions">
+      <option value="all">All Data</option>
+      <option value="sum">Sum</option>
+      <option value="average">Average</option>
+    </select>
+  </div>
+
+  <table id="sensorTable">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Value</th>
+        <th>Timestamp</th>
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+
+  <script>
+    // 更新当前时间并显示在网页中
+    function updateDateTime() {
+      var currentDateTime = new Date().toLocaleString();
+      document.getElementById('currentDateTime').textContent = 'Current Time: ' + currentDateTime;
+    }
+
+    // 初始更新时间
+    updateDateTime();
+
+    // 每秒钟更新一次时间
+    setInterval(updateDateTime, 1000);
+
+    // 解析传感器数据
+    var sensorData = JSON.parse('{{ sensor_data_list_json|safe }}');
+    console.log(sensorData);
+    // 获取表格元素
+    var tableBody = document.querySelector('#sensorTable tbody');
+
+    // 实时数据
+    var realtimeData = [];
+
+    // 监听数据选择下拉菜单的变化
+    var dataOptions = document.getElementById('dataOptions');
+    dataOptions.addEventListener('change', function() {
+      if (dataOptions.value === 'all') {
+        // 显示所有数据
+        populateTable(sensorData);
+      } else if (dataOptions.value === 'sum') {
+        // 显示数据总和
+        populateSumRow();
+      } else if (dataOptions.value === 'average') {
+        // 显示数据平均值
+        populateAverageRow();
+      }
+    });
+
+    // 填充数据到表格
+    function populateTable(data) {
+      // 清空表格内容
+      tableBody.innerHTML = '';
+      // 按时间戳排序（最新时间从高到低）
+      data.sort(function(a, b) {
+        return new Date(a.timestamp) - new Date(b.timestamp);
+      });
+      // 遍历数据，创建行并添加到表格
+      for (var i = data.length - 1; i >= 0; i--) {
+        var rowData = data[i];
+        var row = document.createElement('tr');
+        var idCell = document.createElement('td');
+        idCell.textContent = rowData.id;
+        var valueCell = document.createElement('td');
+        valueCell.textContent = "温度：" + rowData.temperature + '℃, 湿度：' + rowData.humility + '%Rh, 光强：' + rowData.lighten + "Lux";
+        var timestampCell = document.createElement('td');
+        timestampCell.textContent = rowData.date;
+        row.appendChild(idCell);
+        row.appendChild(valueCell);
+        row.appendChild(timestampCell);
+        tableBody.appendChild(row);
+      }
+    }
+
+    // 计算数据总和
+    function calculateSum(data) {
+      var sum1 = 0;
+      var sum2 = 0;
+      var sum3 = 0;
+
+      data.forEach(function(data) {
+        sum1 += data.temperature;
+        sum2 += data.humility;
+        sum3 += data.lighten;
+      });
+
+      return [sum1, sum2, sum3];
+    }
+
+    // 填充数据总和行
+    function populateSumRow() {
+      // 计算数据总和
+      var sum = calculateSum(sensorData);
+
+      // 清空表格内容
+      tableBody.innerHTML = '';
+
+      // 创建行并添加到表格
+      var row = document.createElement('tr');
+      var sumCell = document.createElement('td');
+      sumCell.textContent = 'Sum';
+      var valueCell = document.createElement('td');
+      valueCell.textContent = sum.join(', ');
+      var emptyCell = document.createElement('td');
+      row.appendChild(sumCell);
+      row.appendChild(valueCell);
+      row.appendChild(emptyCell);
+      tableBody.appendChild(row);
+    }
+
+    // 计算数据平均值
+    function calculateAverage(data) {
+      var sum = calculateSum(data);
+      var average = sum.map(function(value) {
+        return (value / data.length).toFixed(2);
+      });
+
+      return average;
+    }
+
+    // 填充数据平均值行
+    function populateAverageRow() {
+      // 计算数据平均值
+      var average = calculateAverage(sensorData);
+
+      // 清空表格内容
+      tableBody.innerHTML = '';
+
+      // 创建行并添加到表格
+      var row = document.createElement('tr');
+      var averageCell = document.createElement('td');
+      averageCell.textContent = 'Average';
+      var valueCell = document.createElement('td');
+      valueCell.textContent = average.join(', ');
+      var emptyCell = document.createElement('td');
+      row.appendChild(averageCell);
+      row.appendChild(valueCell);
+      row.appendChild(emptyCell);
+      tableBody.appendChild(row);
+    }
+    //console.log(typeof(sensorData))
+    // 初始加载表格数据
+    populateTable(sensorData);
+
+    // 定义一个函数，用于更新表格数据
+    function updateTableData() {
+      // 发送Ajax请求
+      selectedOption = dataOptions.value;
+      // console.log(selectedOption);
+      if (selectedOption === 'all') {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', '/get_sensor_data/', true); // 替换成你的URL
+        xhr.responseType = "json"; // 设置响应类型为 JSON
+        xhr.onreadystatechange = function() {
+          if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+            var response = xhr.response;
+            // 更新实时数据
+            realtimeData = JSON.parse(response);
+            console.log(typeof(realtimeData))
+            // 更新表格数据
+            populateTable(realtimeData);
+          }
+        };
+        xhr.send();
+      }
+    }
+
+    // 初始加载实时表格数据
+    updateTableData();
+
+    // 每秒钟更新一次实时表格数据
+    setInterval(updateTableData, 5000);
+
+    // 更新数据统计行
+    function updateStatisticsRow(dataLength) {
+      var statisticsRow = document.getElementById('statisticsRow');
+
+      if (statisticsRow) {
+        statisticsRow.remove();
+      }
+
+      var sum = calculateSum(realtimeData);
+      var average = calculateAverage(realtimeData);
+
+      var row = document.createElement('tr');
+      row.id = 'statisticsRow';
+      var sumCell = document.createElement('td');
+      sumCell.textContent = 'Sum (Realtime)';
+      var sumValueCell = document.createElement('td');
+      sumValueCell.textContent = sum.join(', ');
+      var averageCell = document.createElement('td');
+      averageCell.textContent = 'Average (Realtime)';
+      var averageValueCell = document.createElement('td');
+      averageValueCell.textContent = average.join(', ');
+      row.appendChild(sumCell);
+      row.appendChild(sumValueCell);
+      row.appendChild(averageCell);
+      row.appendChild(averageValueCell);
+
+      // 插入到表格的第一行之前
+      var firstRow = tableBody.querySelector('tr');
+      if (firstRow) {
+        tableBody.insertBefore(row, firstRow);
+      } else {
+        tableBody.appendChild(row);
+      }
+    }
+
+  </script>
+</body>
+</html>

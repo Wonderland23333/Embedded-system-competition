@@ -3,91 +3,227 @@
 <html>
 <head>
     <title>Data List</title>
-    <script src="{% static 'chart.umd.min.js' %}"></script>
+    <script src="{% static 'ploty.js' %}"></script>
+    <style>
+        .header {
+            background-color: #333;
+            padding: 20px;
+        }
+        .header ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            text-align: center;
+        }
+        .header li {
+            display: inline-block;
+        }
+        .header li a {
+            display: block;
+            color: #000;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            transition: background-color 0.3s;
+            font-weight: bold;
+        }
+        .header li a:hover {
+            background-color: #4CAF50;
+        }
+    </style>
 </head>
 <body>
-<h1>Data List</h1>
-<canvas id="bar-chart"></canvas>
+    <div class="header">
+        <ul>
+            <li><a href="../admin/">管理后台</a></li>
+            <li><a href="../data_list/">数据列表</a></li>
+            <li><a href="../pie_chart/">饼状图</a></li>
+            <li><a href="../line_chart/">折线图</a></li>
+            <li><a href="../bar_chart/">柱状图</a></li>
+            <li><a href="../simple_count/">简单统计</a></li>
+            <li><a href="../get_sensor_data/">传感器数据获取</a></li>
+            <li><a href="../warning_list/">警告列表</a></li>
+        </ul>
+    </div>
+<div id="bar-chart"></div>
 </body>
 
 <script>
+// 创建图表数据
+var data;
+// 保存上次的数据长度
+var prevDataLength = 0;
 // 获取后端传递的数据
 var sensorDataList = JSON.parse('{{ sensor_data_list_json|safe }}');
+function update(){
+    // 提取数据
+    var ids = [];
+    var aAngles = [];
+    var rRadiates = [];
+    var sRadiates = [];
 
+    sensorDataList.forEach(function(sensorData) {
+        ids.push(sensorData.date);
+        aAngles.push(sensorData.temperature);
+        rRadiates.push(sensorData.humility);
+        sRadiates.push(sensorData.lighten);
+    });
+    // 计算新数据系列的长度
+  var newDataLength = ids.length - prevDataLength;
+  console.log([ids.slice(-newDataLength)]);
+  // 如果有新数据，添加新数据系列到图表中
+  if (newDataLength > 0) {
+        // 更新图表数据
+    var updateData = [
+        { x: [ids.slice(-newDataLength)], y: [aAngles.slice(-newDataLength)] },
+        { x: [ids.slice(-newDataLength)], y: [rRadiates.slice(-newDataLength)] },
+        { x: [ids.slice(-newDataLength)], y: [sRadiates.slice(-newDataLength)] }
+    ];
+        // 将 updateData 重构为键值对对象
+        var traces = {
+        x: updateData.map(data => data.x[0]),
+        y: updateData.map(data => data.y[0])
+        };
 
-// 提取数据
-var ids = [];
-var aAngles = [];
-var rRadiates = [];
-var sRadiates = [];
-var dRadiates = [];
-var bAngles = [];
-
-sensorDataList.forEach(function(sensorData) {
-    ids.push(sensorData.id);
-    aAngles.push(sensorData.a_angle);
-    rRadiates.push(sensorData.R_radiate);
-    sRadiates.push(sensorData.S_radiate);
-    dRadiates.push(sensorData.D_radiate);
-    bAngles.push(sensorData.b_angle);
-});
-
-// 创建图表并渲染
-var data = {
-    labels: ids,
-    datasets: [
+        // 更新图表
+        Plotly.extendTraces('bar-chart', traces, [0, 1, 2]);
+  }
+  prevDataLength = ids.length;
+} 
+    // 创建图表数据
+    data = [
         {
-            label: 'A Angle',
-            data: aAngles,
-            backgroundColor:'rgba(255, 123, 255, 0.5)',
-            borderColor: 'rgba(255, 123, 255, 1)',
-            borderWidth: 1
+            x: [],
+            y: [],
+            type: 'bar',
+            name: 'temperature',
+            marker: {
+                color: 'rgba(255, 123, 255, 0.5)',
+                line: {
+                    color: 'rgba(255, 123, 255, 1)',
+                    width: 1
+                }
+            }
         },
         {
-            label: 'R Radiate',
-            data: rRadiates,
-            backgroundColor:'rgba(255, 255, 0, 0.5)',
-            borderColor: 'rgba(255, 255, 0, 1)',
-            borderWidth: 1
+            x: [],
+            y: [],
+            type: 'bar',
+            name: 'humidity',
+            marker: {
+                color: 'rgba(255, 255, 0, 0.5)',
+                line: {
+                    color: 'rgba(255, 255, 0, 1)',
+                    width: 1
+                }
+            }
         },
         {
-            label: 'S Radiate',
-            data: sRadiates,
-            backgroundColor:'rgba(0, 123, 255, 0.5)',
-            borderColor: 'rgba(0, 123, 255, 1)',
-            borderWidth: 1
-        },
-        {
-            label: 'D Radiate',
-            data: dRadiates,
-            backgroundColor:'rgba(128, 123, 255, 0.5)',
-            borderColor: 'rgba(128, 123, 255, 1)',
-            borderWidth: 1
-        },
-        {
-            label: 'B Angle',
-            data: bAngles,
-            backgroundColor:'rgba(165, 123, 255, 0.5)',
-            borderColor: 'rgba(165, 123, 255, 1)',
-            borderWidth: 1
+            x: [],
+            y: [],
+            type: 'bar',
+            name: 'light',
+            marker: {
+                color: 'rgba(0, 123, 255, 0.5)',
+                line: {
+                    color: 'rgba(0, 123, 255, 1)',
+                    width: 1
+                }
+            }
         }
-    ]
-};
+    ];
+   
+    
 
-var options = {
-    responsive: true,
-    scales: {
-        y: {
-            beginAtZero: true
+    // 设置布局
+    var layout = {
+        title: '柱状图',
+        xaxis: {
+            title: 'X轴标签'
+        },
+        yaxis: {
+            title: 'Y轴标签'
+        },
+        dragmode: 'pan',
+        hovermode: 'closest',
+        zoom: {      
+        wheel: true,
+        zoom: {
+            dragmode: false,
+            mode: 'y'
+        },
+        pan: {
+            dragmode: false,
+            mode: 'y'
         }
+        }
+    };
+    Plotly.newPlot('bar-chart', data, layout);
+    update();
+    // 渲染图表
+    
+    function zoomChart(e) {
+        var zoomFactor = e.deltaY > 0 ? 1.1 : 0.9; // 设置缩放因子
+
+        var plot = document.getElementById('bar-chart');
+        var rect = plot.getBoundingClientRect();
+
+        // var x = e.clientX - rect.left; // 鼠标相对于图表左上角的x坐标
+        var y = e.clientY - rect.top; // 鼠标相对于图表左上角的y坐标
+
+        // var xaxisRange = layout.xaxis.range; // x轴范围
+        var yaxisRange = layout.yaxis.range; // y轴范围
+
+        // var relX = layout.xaxis.range[0] + (x / rect.width) * (xaxisRange[1] - xaxisRange[0]);
+        var relY = layout.yaxis.range[0] + (1 - y / rect.height) * (yaxisRange[1] - yaxisRange[0]);
+
+        //   var newxaxisRange = [
+        //     relX - (relX - xaxisRange[0]) * zoomFactor,
+        //     relX + (xaxisRange[1] - relX) * zoomFactor
+        //   ];
+
+        var newyaxisRange = [
+            relY - (relY - yaxisRange[0]) * zoomFactor,
+            relY + (yaxisRange[1] - relY) * zoomFactor
+        ];
+
+        // 设置新的x轴和y轴范围
+        Plotly.relayout('bar-chart', {
+            // 'xaxis.range': newxaxisRange,
+            'yaxis.range': newyaxisRange
+        });
     }
-};
-
-var ctx = document.getElementById('bar-chart').getContext('2d');
-new Chart(ctx, {
-    type: 'bar',
-    data: data,
-    options: options
-});
+    // 监听窗口大小变化
+    window.addEventListener("resize", function () {
+        Plotly.relayout("bar-chart", {
+          height: window.innerHeight * 0.9,
+          width: window.innerWidth * 0.9,
+        });
+      });
+    // 添加鼠标滚轮事件监听器
+    document.getElementById('bar-chart').addEventListener('wheel', zoomChart, { passive: true });
+    // 实时5s更新
+    // 定义一个函数，用于更新数据
+    function updatebarData() {
+        // 发送Ajax请求
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', '/get_sensor_data/', true); // 替换成你的URL
+        xhr.responseType = "json"; // 设置响应类型为 JSON
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+            var response = xhr.response;
+            // 更新实时数据
+            sensorDataList = JSON.parse(response);
+            console.log(sensorDataList);
+            update();
+            
+            // Plotly.relayout('bar-chart', data, layout)
+            }
+        };
+        xhr.send();
+    }
+    // 每秒钟更新一次实时表格数据
+    setInterval(updatebarData, 5000);
 </script>
 </html>

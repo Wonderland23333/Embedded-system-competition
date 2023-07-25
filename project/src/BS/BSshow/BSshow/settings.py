@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-l4e+(qca-j(&on#7dcllivkegu6h7um2q9dupwpn@irmux*3r_
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["47.120.40.78", "127.0.0.1"]
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -75,12 +75,12 @@ WSGI_APPLICATION = 'BSshow.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': '/root/loongarch/project/sensor.db',
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': '/root/loongarch/project/sensor.db',
+#     }
+# }
 
 
 
@@ -122,7 +122,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 # 静态文件的根目录路径
-STATIC_ROOT = '/root/loongarch/project/src/BS/BSshow/static/'
+STATIC_ROOT = '/home/loongson/Desktop/BSshow/BSshow/static/'
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "common_static")
@@ -133,3 +133,10 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': '/home/loongson/Desktop/BSshow/src/sensor.db',
+    }
+}
+
